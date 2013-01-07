@@ -97,28 +97,28 @@ sub puppet_run {
 
 
 sub sigcld {
-	my ($kernel, $heap, $sig, $pid, $exit_code, $wheel_id) = @_[KERNEL, HEAP, ARG0..ARG3];
+	my ($kernel, $heap, $sig, $pid, $exitcode, $wheel_id) = @_[KERNEL, HEAP, ARG0..ARG3];
 
 	# see waitpid doc: to get the 'unix' value you must shift 8 bits.
-	$exit_code = ($exit_code >> 8);
+	$exitcode = ($exitcode >> 8);
 
-	print "got sigcld from pid $pid (exit: $exit_code)\n";
+	print "got sigcld from pid $pid (exit: $exitcode)\n";
 	delete $heap->{wheels}->{$wheel_id};
 
-	$heap->{exit_code} = $exit_code;
+	$heap->{exitcode} = $exitcode;
 }
 
 sub stop {
 	my $heap = $_[HEAP];
-	if($heap->{exit_code} eq '0' or $heap->{exit_code} eq '2') {
+	if($heap->{exitcode} eq '0' or $heap->{exitcode} eq '2') {
 		system("/usr/bin/touch /dev/shm/puppet_success_run");
 	}
 
 	open EXITCODE, ">/tmp/last_puppet_exit_code" or die $!;
-	print EXITCODE $heap->{exit_code}."\n";
+	print EXITCODE $heap->{exitcode}."\n";
 	close EXITCODE;
 
-	exit $exitcode; # have this as an exit ...
+	exit $heap->{exitcode}; # have this as an exit ...
 
 
 }
