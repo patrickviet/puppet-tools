@@ -118,6 +118,8 @@ sub stop {
 	print EXITCODE $heap->{exit_code}."\n";
 	close EXITCODE;
 
+	exit $exitcode; # have this as an exit ...
+
 
 }
 
